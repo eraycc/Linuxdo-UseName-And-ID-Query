@@ -721,25 +721,6 @@ body {
                     `;
                 }
                 
-                // 提醒频率设置
-                if (user.reminders_frequency && user.reminders_frequency.length > 0) {
-                    html += `
-                        <div class="bg-white rounded-xl p-6 shadow-sm">
-                            <h4 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2 flex items-center">
-                                <i class="fas fa-bell mr-2 text-primary-500"></i> 提醒频率设置
-                            </h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                                ${user.reminders_frequency.map(item => `
-                                    <div class="bg-gray-50 rounded-lg p-4">
-                                        <h5 class="text-sm font-medium text-gray-500">${item.name.split('.').pop()}</h5>
-                                        <p class="text-lg font-semibold">${item.value === 0 ? '从不' : formatReminderFrequency(item.value)}</p>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `;
-                }
-                
                 $('#userResult').html(html);
                 
                 // 初始化图表
