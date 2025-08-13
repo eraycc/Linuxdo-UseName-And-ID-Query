@@ -38,7 +38,7 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: "ldcx"
-          entrypoint: "main"
+          entrypoint: "main.ts"
           root: ""
           
           
