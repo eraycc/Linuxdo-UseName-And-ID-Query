@@ -4,8 +4,9 @@ linuxdo社区通过id查询，username查询用户信息
 ## 部署
 
 ```bash
-deno run --allow-net --allow-read server.ts
+deno run --allow-net --allow-read main.ts
 ```
+
 打开浏览器访问 `http://localhost:8000`
 
 ## 主要说明
