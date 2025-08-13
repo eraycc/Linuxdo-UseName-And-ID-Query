@@ -79,10 +79,12 @@ async function handleRequest(req: Request): Promise<Response> {
 function processImageUrls(obj: any) {
   if (typeof obj === 'object' && obj !== null) {
     for (const key in obj) {
+      // 处理头像模板
       if (key === 'avatar_template' && typeof obj[key] === 'string') {
         obj['avatar_url'] = 'https://linux.do' + obj[key].replace('{size}', '288');
       }
       
+      // 处理 bio_cooked 中的图片路径
       if (key === 'bio_cooked' && typeof obj[key] === 'string') {
         // 使用正则表达式全局替换所有 /images/ 路径
         obj[key] = obj[key].replace(
@@ -91,10 +93,14 @@ function processImageUrls(obj: any) {
         );
       }
       
-      if (typeof obj[key] === 'string' && obj[key].startsWith('/uploads/')) {
+      // 处理上传文件的路径，但排除已经被处理过的 URL
+      if (typeof obj[key] === 'string' && 
+          obj[key].startsWith('/uploads/') && 
+          !obj[key].startsWith('https://')) {
         obj[key] = 'https://linux.do' + obj[key];
       }
       
+      // 递归处理子对象
       if (typeof obj[key] === 'object') {
         processImageUrls(obj[key]);
       }
