@@ -1,1 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>LINUXDO ID用户名查询网站</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+<style>
+:root {
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --secondary: #10b981;
+    --dark: #1e293b;
+    --light: #f8fafc;
+}
 
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f1f5f9;
+    color: var(--dark);
+}
+
+.card {
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    border: 1px solid rgba(209, 213, 219, 0.3);
+    box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.badge {
+    background-color: rgba(79, 70, 229, 0.1);
+    color: var(--primary);
+    border-radius: 9999px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.user-avatar {
+    border: 4px solid white;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.flair {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.tab-active {
+    border-bottom: 3px solid var(--primary);
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.emoji {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+#resultContainer {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+#resultContainer.show {
+    opacity: 1;
+}
+</style>
+
+</head>
+<body class="min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2 animate__animated animate__fadeInDown">LINUXDO ID用户名查询网站</h1>
+            <p class="text-gray-600 animate__animated animate__fadeInUp animate__delay-1s">查询LinuxDo社区用户信息</p>
+        </header>
+        
+        <div class="flex flex-col md:flex-row gap-8 mb-12">
+            <!-- 主查询卡片 -->
+            <div class="card p-8 flex-1 animate__animated animate__fadeIn animate__delay-1s">
+                <div class="flex border-b border-gray-200 mb-6">
+                    <button id="tabUsername" class="px-4 py-2 font-medium text-gray-700 tab-active">用户名查询</button>
+                    <button id="tabId" class="px-4 py-2 font-medium text-gray-500">ID查询</button>
+                </div>
+                
+                <!-- 用户名查询表单 -->
+                <div id="usernameForm" class="space-y-6">
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">LinuxDo 用户名</label>
+                        <input type="text" id="username" name="username" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="请输入用户名">
+                    </div>
+                    <button id="searchUsername" class="w-full btn-primary text-white py-3 px-6 rounded-lg font-medium flex items-center justify-center">
+                        <i class="fas fa-search mr-2"></i> 查询
+                    </button>
+                </div>
+                
+                <!-- ID查询表单 -->
+                <div id="idForm" class="space-y-6 hidden">
+                    <div>
+                        <label for="userId" class="block text-sm font-medium text-gray-700 mb-1">LinuxDo ID</label>
+                        <input type="number" id="userId" name="userId" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="请输入用户ID">
+                    </div>
+                    <button id="searchId" class="w-full btn-primary text-white py-3 px-6 rounded-lg font-medium flex items-center justify-center">
+                        <i class="fas fa-id-card mr-2"></i> 查询
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 说明卡片 -->
+            <div class="card p-6 w-full md:w-80 animate__animated animate__fadeIn animate__delay-2s">
+                <h3 class="text-xl font-semibold mb-4 text-indigo-600 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i> 使用说明
+                </h3>
+                <ul class="space-y-3 text-sm text-gray-600">
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-indigo-500 mt-1 mr-2"></i>
+                        <span>用户名查询：输入LinuxDo社区用户名查询详细信息</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-indigo-500 mt-1 mr-2"></i>
+                        <span>ID查询：输入用户ID查看证书</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-2"></i>
+                        <span>部分数据可能因隐私设置不可见</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- 结果容器 -->
+        <div id="resultContainer" class="card p-6 mb-12 hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">查询结果</h2>
+                <button id="backToSearch" class="text-sm text-indigo-600 hover:text-indigo-800 flex items-center">
+                    <i class="fas fa-arrow-left mr-1"></i> 返回搜索
+                </button>
+            </div>
+            
+            <div id="userResult" class="space-y-8"></div>
+        </div>
+        
+        <!-- 加载动画 -->
+        <div id="loading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+            <div class="bg-white p-8 rounded-lg shadow-xl text-center">
+                <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-indigo-500 border-opacity-75 mx-auto mb-4"></div>
+                <p class="text-gray-700 font-medium">正在查询中，请稍候...</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="bg-white py-6 border-t border-gray-200">
+        <div class="container mx-auto px-4 text-center text-gray-500 text-sm">
+            <p>© <span id="currentYear"></span> LinuxDo ID查询工具 - 非官方服务</p>
+            <p class="mt-1">数据来源于LinuxDo社区，仅供学习参考</p>
+        </div>
+    </footer>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // 设置当前年份
+            $('#currentYear').text(new Date().getFullYear());
+            
+            // 切换标签页
+            $('#tabUsername').click(function() {
+                $('#usernameForm').removeClass('hidden');
+                $('#idForm').addClass('hidden');
+                $(this).addClass('tab-active').removeClass('text-gray-500');
+                $('#tabId').removeClass('tab-active').addClass('text-gray-500');
+            });
+            
+            $('#tabId').click(function() {
+                $('#idForm').removeClass('hidden');
+                $('#usernameForm').addClass('hidden');
+                $(this).addClass('tab-active').removeClass('text-gray-500');
+                $('#tabUsername').removeClass('tab-active').addClass('text-gray-500');
+            });
+            
+            // 返回搜索按钮
+            $('#backToSearch').click(function() {
+                $('#resultContainer').removeClass('show').addClass('hidden');
+                $('html, body').animate({ scrollTop: 0 }, 300);
+            });
+            
+            // ID查询
+            $('#searchId').click(function() {
+                const userId = $('#userId').val().trim();
+                if (!userId) {
+                    alert('请输入LinuxDo ID');
+                    return;
+                }
+                
+                window.open(`https://linux.do/discobot/certificate.svg?date=Jan+29+2024%5Cu0026amp;type=advanced%5Cu0026amp;user_id=${userId}`);
+            });
+            
+            // 用户名查询
+            $('#searchUsername').click(function() {
+                const username = $('#username').val().trim();
+                if (!username) {
+                    alert('请输入用户名');
+                    return;
+                }
+                
+                $('#loading').removeClass('hidden');
+                
+                const formData = new FormData();
+                formData.append('username', username);
+                
+                fetch('/api/user', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(response => {
+                    $('#loading').addClass('hidden');
+                    
+                    if (response.error) {
+                        alert(response.error);
+                        return;
+                    }
+                    
+                    displayUserInfo(response.user);
+                    $('#resultContainer').removeClass('hidden').addClass('show');
+                    $('html, body').animate({ scrollTop: $('#resultContainer').offset().top - 20 }, 500);
+                })
+                .catch(error => {
+                    $('#loading').addClass('hidden');
+                    console.error('Error:', error);
+                    alert('查询失败，请稍后再试');
+                });
+            });
+            
+            // 显示用户信息
+            function displayUserInfo(user) {
+                let html = `
+                    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 md:p-8">
+                        <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
+                            <img src="${user.avatar_url || 'https://via.placeholder.com/288'}" alt="头像" class="user-avatar w-24 h-24 rounded-full object-cover">
+                            <div class="flex-1">
+                                <div class="flex flex-wrap items-center gap-3 mb-2">
+                                    <h3 class="text-2xl font-bold text-gray-800">${user.name || user.username}</h3>
+                                    ${user.title ? `<span class="badge">${user.title}</span>` : ''}
+                                    ${user.card_badge ? `<span class="badge">${user.card_badge.name}</span>` : ''}
+                                    ${user.flair_name ? `<span class="flair" style="background-color: black; color: white;">${user.flair_name}</span>` : ''}
+                                </div>
+                                <p class="text-gray-600 mb-1"><i class="fas fa-user mr-2"></i> @${user.username}</p>
+                                ${user.location ? `<p class="text-gray-600 mb-1"><i class="fas fa-map-marker-alt mr-2"></i> ${user.location}</p>` : ''}
+                                ${user.website ? `<p class="text-gray-600"><i class="fas fa-link mr-2"></i> <a href="${user.website}" target="_blank" class="text-indigo-600 hover:underline">${user.website_name || user.website}</a></p>` : ''}
+                            </div>
+                            <div class="bg-white rounded-lg p-4 shadow-sm">
+                                <p class="text-sm text-gray-500 mb-1">用户 ID</p>
+                                <p class="text-lg font-semibold">${user.id}</p>
+                            </div>
+                        </div>
+                        
+                        ${user.bio_cooked ? `
+                        <div class="mt-6 bg-white rounded-lg p-4 shadow-sm">
+                            <h4 class="text-sm font-medium text-gray-500 mb-2">个人简介</h4>
+                            <div class="prose max-w-none">${user.bio_cooked}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white rounded-xl p-6 shadow-sm">
+                            <h4 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2">基本信息</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-sm text-gray-500">注册时间</p>
+                                    <p>${formatDate(user.created_at)}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">最后活动</p>
+                                    <p>${formatDate(user.last_seen_at)}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">最后发帖</p>
+                                    <p>${user.last_posted_at ? formatDate(user.last_posted_at) : '无记录'}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">时区</p>
+                                    <p>${user.timezone || '未知'}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl p-6 shadow-sm">
+                            <h4 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2">社区活跃</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-sm text-gray-500">信任等级</p>
+                                    <p>${user.trust_level} (${getTrustLevelName(user.trust_level)})</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">徽章数量</p>
+                                    <p>${user.badge_count || 0}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">总阅读时间</p>
+                                    <p>${formatTimeRead(user.time_read)}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">近期阅读时间</p>
+                                    <p>${formatTimeRead(user.recent_time_read)}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl p-6 shadow-sm">
+                            <h4 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2">社交信息</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-sm text-gray-500">关注者</p>
+                                    <p>${user.total_followers || 0}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">正在关注</p>
+                                    <p>${user.total_following || 0}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">个人资料查看次数</p>
+                                    <p>${user.profile_view_count || 0}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">游戏化分数</p>
+                                    <p>${user.gamification_score || 0}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                if (user.featured_topic) {
+                    html += `
+                        <div class="bg-white rounded-xl p-6 shadow-sm">
+                            <h4 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2">精选主题</h4>
+                            <div>
+                                <p class="font-medium"><a href="https://linux.do/t/topic/${user.featured_topic.id}" target="_blank" style="text-decoration:none;">${user.featured_topic.fancy_title || user.featured_topic.title}</a></p>
+                                <p class="text-sm text-gray-600 mt-1">帖子数: ${user.featured_topic.posts_count}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                $('#userResult').html(html);
+            }
+            
+            // 格式化日期
+            function formatDate(dateString) {
+                if (!dateString) return '未知';
+                const date = new Date(dateString);
+                return date.toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                });
+            }
+            
+            // 格式化阅读时间
+            function formatTimeRead(minutes) {
+                if (!minutes) return '0分钟';
+                const hours = Math.floor(minutes / 60);
+                const mins = minutes % 60;
+                return hours > 0 ? `${hours}小时${mins}分钟` : `${mins}分钟`;
+            }
+            
+            // 获取信任等级名称
+            function getTrustLevelName(level) {
+                const levels = {
+                    0: '新用户',
+                    1: '基本用户',
+                    2: '普通用户',
+                    3: '活跃用户',
+                    4: '高级用户'
+                };
+                return levels[level] || '未知';
+            }
+        });
+    </script>
+</body>
+</html>
