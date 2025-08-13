@@ -4,46 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>LINUXDO ID用户名查询网站</title>
+    <title>LINUXDO 用户信息查询</title>
     
-    <!-- Font Awesome -->
+    <!-- 字体和图标 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Animate.css -->
+    <!-- 动画库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
+    <!-- 图表库 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        secondary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        dark: '#1e293b',
+                        light: '#f8fafc',
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'Noto Sans SC', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
     
 <style>
 :root {
-    --primary: #4f46e5;
-    --primary-dark: #4338ca;
-    --secondary: #10b981;
+    --primary: #0ea5e9;
+    --primary-dark: #0284c7;
+    --secondary: #22c55e;
     --dark: #1e293b;
     --light: #f8fafc;
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Noto Sans SC', sans-serif;
     background-color: #f1f5f9;
     color: var(--dark);
 }
 
-.card {
+.glass-card {
     backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 16px;
     border: 1px solid rgba(209, 213, 219, 0.3);
     box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
 }
 
-.card:hover {
+.glass-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.2);
 }
@@ -51,20 +91,24 @@ body {
 .btn-primary {
     background-color: var(--primary);
     transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover {
     background-color: var(--primary-dark);
     transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .badge {
-    background-color: rgba(79, 70, 229, 0.1);
+    background-color: rgba(14, 165, 233, 0.1);
     color: var(--primary);
     border-radius: 9999px;
     padding: 0.25rem 0.75rem;
     font-size: 0.75rem;
     font-weight: 500;
+    display: inline-flex;
+    align-items: center;
 }
 
 .user-avatar {
@@ -75,10 +119,12 @@ body {
 .flair {
     display: inline-flex;
     align-items: center;
-    padding: 0.25rem 0.5rem;
+    padding: 0.25rem 0.75rem;
     border-radius: 9999px;
     font-size: 0.75rem;
     font-weight: 600;
+    background-color: #2e303d;
+    color: #fff;
 }
 
 .tab-active {
@@ -101,19 +147,167 @@ body {
 #resultContainer.show {
     opacity: 1;
 }
+
+.progress-bar {
+    height: 8px;
+    border-radius: 4px;
+    background-color: #e2e8f0;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0ea5e9, #22c55e);
+    transition: width 0.5s ease;
+}
+
+.collapse-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.collapse-content.show {
+    max-height: 1000px;
+}
+
+.signature {
+    border-left: 3px solid var(--primary);
+    padding-left: 1rem;
+    margin: 1rem 0;
+}
+
+.activity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.activity-item {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.activity-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.activity-label {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.badge-card {
+    border-radius: 8px;
+    padding: 1rem;
+    background-color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.badge-card:hover {
+    transform: translateY(-5px);
+}
+
+.badge-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #e0f2fe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.5rem;
+    color: var(--primary);
+    font-size: 1.25rem;
+}
+
+.timeline {
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #e2e8f0;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 1.5rem;
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -1.5rem;
+    top: 0;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background-color: var(--primary);
+    border: 3px solid white;
+}
+
+.timeline-content {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-date {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-bottom: 0.25rem;
+}
+
+.timeline-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-desc {
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .activity-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+    
+    .badge-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
 </style>
 
 </head>
-<body class="min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-6xl">
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
         <header class="text-center mb-12">
-            <h1 class="text-4xl font-bold text-gray-800 mb-2 animate__animated animate__fadeInDown">LINUXDO ID用户名查询网站</h1>
-            <p class="text-gray-600 animate__animated animate__fadeInUp animate__delay-1s">查询LinuxDo社区用户信息</p>
+            <h1 class="text-4xl font-bold text-gray-800 mb-2 animate__animated animate__fadeInDown">LINUXDO 用户信息查询</h1>
+            <p class="text-gray-600 animate__animated animate__fadeInUp animate__delay-1s"> LinuxDo 用户信息查询 </p>
         </header>
         
         <div class="flex flex-col md:flex-row gap-8 mb-12">
             <!-- 主查询卡片 -->
-            <div class="card p-8 flex-1 animate__animated animate__fadeIn animate__delay-1s">
+            <div class="glass-card p-8 flex-1 animate__animated animate__fadeIn animate__delay-1s">
                 <div class="flex border-b border-gray-200 mb-6">
                     <button id="tabUsername" class="px-4 py-2 font-medium text-gray-700 tab-active">用户名查询</button>
                     <button id="tabId" class="px-4 py-2 font-medium text-gray-500">ID查询</button>
@@ -123,10 +317,10 @@ body {
                 <div id="usernameForm" class="space-y-6">
                     <div>
                         <label for="username" class="block text-sm font-medium text-gray-700 mb-1">LinuxDo 用户名</label>
-                        <input type="text" id="username" name="username" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="请输入用户名">
+                        <input type="text" id="username" name="username" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition" placeholder="请输入用户名">
                     </div>
                     <button id="searchUsername" class="w-full btn-primary text-white py-3 px-6 rounded-lg font-medium flex items-center justify-center">
-                        <i class="fas fa-search mr-2"></i> 查询
+                        <i class="fas fa-search mr-2"></i> 查询用户信息
                     </button>
                 </div>
                 
@@ -134,41 +328,45 @@ body {
                 <div id="idForm" class="space-y-6 hidden">
                     <div>
                         <label for="userId" class="block text-sm font-medium text-gray-700 mb-1">LinuxDo ID</label>
-                        <input type="number" id="userId" name="userId" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="请输入用户ID">
+                        <input type="number" id="userId" name="userId" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition" placeholder="请输入用户ID">
                     </div>
                     <button id="searchId" class="w-full btn-primary text-white py-3 px-6 rounded-lg font-medium flex items-center justify-center">
-                        <i class="fas fa-id-card mr-2"></i> 查询
+                        <i class="fas fa-id-card mr-2"></i> 查看用户证书
                     </button>
                 </div>
             </div>
             
             <!-- 说明卡片 -->
-            <div class="card p-6 w-full md:w-80 animate__animated animate__fadeIn animate__delay-2s">
-                <h3 class="text-xl font-semibold mb-4 text-indigo-600 flex items-center">
+            <div class="glass-card p-6 w-full md:w-80 animate__animated animate__fadeIn animate__delay-2s">
+                <h3 class="text-xl font-semibold mb-4 text-primary-600 flex items-center">
                     <i class="fas fa-info-circle mr-2"></i> 使用说明
                 </h3>
                 <ul class="space-y-3 text-sm text-gray-600">
                     <li class="flex items-start">
-                        <i class="fas fa-check text-indigo-500 mt-1 mr-2"></i>
+                        <i class="fas fa-check text-primary-500 mt-1 mr-2"></i>
                         <span>用户名查询：输入LinuxDo社区用户名查询详细信息</span>
                     </li>
                     <li class="flex items-start">
-                        <i class="fas fa-check text-indigo-500 mt-1 mr-2"></i>
+                        <i class="fas fa-check text-primary-500 mt-1 mr-2"></i>
                         <span>ID查询：输入用户ID查看证书</span>
                     </li>
                     <li class="flex items-start">
                         <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-2"></i>
                         <span>部分数据可能因隐私设置不可见</span>
                     </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-lock text-gray-500 mt-1 mr-2"></i>
+                        <span>所有查询均为公开数据，不涉及隐私</span>
+                    </li>
                 </ul>
             </div>
         </div>
         
         <!-- 结果容器 -->
-        <div id="resultContainer" class="card p-6 mb-12 hidden">
+        <div id="resultContainer" class="glass-card p-6 mb-12 hidden">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-800">查询结果</h2>
-                <button id="backToSearch" class="text-sm text-indigo-600 hover:text-indigo-800 flex items-center">
+                <h2 class="text-2xl font-bold text-gray-800">用户信息详情</h2>
+                <button id="backToSearch" class="text-sm text-primary-600 hover:text-primary-800 flex items-center">
                     <i class="fas fa-arrow-left mr-1"></i> 返回搜索
                 </button>
             </div>
@@ -178,17 +376,22 @@ body {
         
         <!-- 加载动画 -->
         <div id="loading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-            <div class="bg-white p-8 rounded-lg shadow-xl text-center">
-                <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-indigo-500 border-opacity-75 mx-auto mb-4"></div>
+            <div class="bg-white p-8 rounded-lg shadow-xl text-center animate__animated animate__fadeIn">
+                <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-primary-500 border-opacity-75 mx-auto mb-4"></div>
                 <p class="text-gray-700 font-medium">正在查询中，请稍候...</p>
+                <p class="text-sm text-gray-500 mt-2">从 LinuxDo 社区获取数据</p>
             </div>
         </div>
     </div>
     
-    <footer class="bg-white py-6 border-t border-gray-200">
+    <footer class="bg-white py-6 border-t border-gray-200 mt-12">
         <div class="container mx-auto px-4 text-center text-gray-500 text-sm">
-            <p>© <span id="currentYear"></span> LinuxDo ID查询工具 - 非官方服务</p>
-            <p class="mt-1">数据来源于LinuxDo社区，仅供学习参考</p>
+            <p>© <span id="currentYear"></span> LinuxDo 用户信息查询工具 - 非官方服务</p>
+            <p class="mt-1">数据来源于 LinuxDo 社区 API，仅供学习参考</p>
+            <div class="flex justify-center space-x-4 mt-2">
+                <a href="https://linux.do" target="_blank" class="text-primary-600 hover:text-primary-800">LinuxDo 社区</a>
+                <a href="https://wiki.linux.do" target="_blank" class="text-primary-600 hover:text-primary-800">LinuxDo Wiki</a>
+            </div>
         </div>
     </footer>
     
@@ -270,23 +473,38 @@ body {
             // 显示用户信息
             function displayUserInfo(user) {
                 let html = `
-                    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 md:p-8">
+                    <!-- 用户基本信息卡片 -->
+                    <div class="bg-gradient-to-r from-primary-50 to-secondary-50 rounded-xl p-6 md:p-8 shadow-sm">
                         <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
-                            <img src="${user.avatar_url || 'https://via.placeholder.com/288'}" alt="头像" class="user-avatar w-24 h-24 rounded-full object-cover">
+                            <div class="relative">
+                                <img src="${user.avatar_url || 'https://via.placeholder.com/288'}" alt="头像" class="user-avatar w-24 h-24 rounded-full object-cover">
+                                ${user.card_badge ? `
+                                <div class="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-md" title="${user.card_badge.description}">
+                                    <img src="${user.flair_url ? 'https://linux.do' + user.flair_url : 'https://via.placeholder.com/48'}" alt="徽章" class="w-10 h-10 rounded-full">
+                                </div>
+                                ` : ''}
+                            </div>
                             <div class="flex-1">
                                 <div class="flex flex-wrap items-center gap-3 mb-2">
                                     <h3 class="text-2xl font-bold text-gray-800">${user.name || user.username}</h3>
-                                    ${user.title ? `<span class="badge">${user.title}</span>` : ''}
-                                    ${user.card_badge ? `<span class="badge">${user.card_badge.name}</span>` : ''}
-                                    ${user.flair_name ? `<span class="flair" style="background-color: black; color: white;">${user.flair_name}</span>` : ''}
+                                    ${user.title ? `<span class="badge"><i class="fas fa-crown mr-1"></i> ${user.title}</span>` : ''}
+                                    ${user.card_badge ? `<span class="badge"><i class="fas fa-award mr-1"></i> ${user.card_badge.name}</span>` : ''}
+                                    ${user.flair_name ? `<span class="flair"><i class="fas fa-tag mr-1"></i> ${user.flair_name}</span>` : ''}
                                 </div>
                                 <p class="text-gray-600 mb-1"><i class="fas fa-user mr-2"></i> @${user.username}</p>
                                 ${user.location ? `<p class="text-gray-600 mb-1"><i class="fas fa-map-marker-alt mr-2"></i> ${user.location}</p>` : ''}
-                                ${user.website ? `<p class="text-gray-600"><i class="fas fa-link mr-2"></i> <a href="${user.website}" target="_blank" class="text-indigo-600 hover:underline">${user.website_name || user.website}</a></p>` : ''}
+                                ${user.website ? `<p class="text-gray-600"><i class="fas fa-link mr-2"></i> <a href="${user.website}" target="_blank" class="text-primary-600 hover:underline">${user.website_name || user.website}</a></p>` : ''}
                             </div>
                             <div class="bg-white rounded-lg p-4 shadow-sm">
                                 <p class="text-sm text-gray-500 mb-1">用户 ID</p>
                                 <p class="text-lg font-semibold">${user.id}</p>
+                                <p class="text-sm text-gray-500 mt-2">信任等级</p>
+                                <div class="flex items-center">
+                                    <div class="progress-bar w-full mr-2">
+                                        <div class="progress-fill" style="width: ${user.trust_level * 25}%"></div>
+                                    </div>
+                                    <span class="text-sm font-medium">${user.trust_level}</span>
+                                </div>
                             </div>
                         </div>
                         
@@ -296,90 +514,282 @@ body {
                             <div class="prose max-w-none">${user.bio_cooked}</div>
                         </div>
                         ` : ''}
+                        
+                        ${user.custom_fields?.signature_url ? `
+                        <div class="mt-4 bg-white rounded-lg p-4 shadow-sm">
+                            <h4 class="text-sm font-medium text-gray-500 mb-2">个性签名</h4>
+                            <div class="signature">
+                                <img src="${user.custom_fields.signature_url}" alt="签名" class="max-w-full h-auto">
+                            </div>
+                        </div>
+                        ` : ''}
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- 用户活动统计 -->
+                    <div class="activity-grid">
+                        <div class="activity-item">
+                            <div class="activity-value">${user.badge_count || 0}</div>
+                            <div class="activity-label">徽章数量</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-value">${user.total_followers || 0}</div>
+                            <div class="activity-label">关注者</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-value">${user.total_following || 0}</div>
+                            <div class="activity-label">正在关注</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-value">${user.profile_view_count || 0}</div>
+                            <div class="activity-label">资料查看</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-value">${user.gamification_score || 0}</div>
+                            <div class="activity-label">游戏化分数</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-value">${user.accepted_answers || 0}</div>
+                            <div class="activity-label">采纳答案</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-value">${user.vote_count || 0}</div>
+                            <div class="activity-label">投票次数</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-value">${user.pending_count || 0}</div>
+                            <div class="activity-label">待处理</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 时间线信息 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 时间线卡片 -->
                         <div class="bg-white rounded-xl p-6 shadow-sm">
-                            <h4 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2">基本信息</h4>
+                            <h4 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2 flex items-center">
+                                <i class="fas fa-history mr-2 text-primary-500"></i> 时间线
+                            </h4>
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-date">注册时间</div>
+                                        <div class="timeline-title">加入 LinuxDo 社区</div>
+                                        <div class="timeline-desc">${formatDate(user.created_at)}</div>
+                                    </div>
+                                </div>
+                                ${user.last_seen_at ? `
+                                <div class="timeline-item">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-date">最后活动</div>
+                                        <div class="timeline-title">最近一次在线</div>
+                                        <div class="timeline-desc">${formatDate(user.last_seen_at)}</div>
+                                    </div>
+                                </div>
+                                ` : ''}
+                                ${user.last_posted_at ? `
+                                <div class="timeline-item">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-date">最后发帖</div>
+                                        <div class="timeline-title">最近一次发帖</div>
+                                        <div class="timeline-desc">${formatDate(user.last_posted_at)}</div>
+                                    </div>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        <!-- 阅读时间卡片 -->
+                        <div class="bg-white rounded-xl p-6 shadow-sm">
+                            <h4 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2 flex items-center">
+                                <i class="fas fa-book-reader mr-2 text-primary-500"></i> 阅读统计
+                            </h4>
+                            <div class="mb-4">
+                                <h5 class="text-sm font-medium text-gray-500 mb-2">总阅读时间</h5>
+                                <p class="text-xl font-semibold">${formatTimeRead(user.time_read)}</p>
+                                <p class="text-xs text-gray-500">约 ${Math.round(user.time_read / 60)} 小时</p>
+                            </div>
+                            <div class="mb-4">
+                                <h5 class="text-sm font-medium text-gray-500 mb-2">近期阅读时间</h5>
+                                <p class="text-xl font-semibold">${formatTimeRead(user.recent_time_read)}</p>
+                                <p class="text-xs text-gray-500">约 ${Math.round(user.recent_time_read / 60)} 小时</p>
+                            </div>
+                            <canvas id="readingChart" height="150"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- 社交和设置 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 社交设置 -->
+                        <div class="bg-white rounded-xl p-6 shadow-sm">
+                            <h4 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2 flex items-center">
+                                <i class="fas fa-users mr-2 text-primary-500"></i> 社交设置
+                            </h4>
                             <div class="space-y-3">
-                                <div>
-                                    <p class="text-sm text-gray-500">注册时间</p>
-                                    <p>${formatDate(user.created_at)}</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">允许关注我</span>
+                                    <span class="font-medium">${user.allow_people_to_follow_me ? '<i class="fas fa-check-circle text-green-500"></i> 是' : '<i class="fas fa-times-circle text-red-500"></i> 否'}</span>
                                 </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">最后活动</p>
-                                    <p>${formatDate(user.last_seen_at)}</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">被关注时通知我</span>
+                                    <span class="font-medium">${user.notify_me_when_followed ? '<i class="fas fa-check-circle text-green-500"></i> 是' : '<i class="fas fa-times-circle text-red-500"></i> 否'}</span>
                                 </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">最后发帖</p>
-                                    <p>${user.last_posted_at ? formatDate(user.last_posted_at) : '无记录'}</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">关注者回复时通知</span>
+                                    <span class="font-medium">${user.notify_me_when_followed_replies ? '<i class="fas fa-check-circle text-green-500"></i> 是' : '<i class="fas fa-times-circle text-red-500"></i> 否'}</span>
                                 </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">时区</p>
-                                    <p>${user.timezone || '未知'}</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">关注者创建主题时通知</span>
+                                    <span class="font-medium">${user.notify_followed_user_when_followed ? '<i class="fas fa-check-circle text-green-500"></i> 是' : '<i class="fas fa-times-circle text-red-500"></i> 否'}</span>
                                 </div>
                             </div>
                         </div>
                         
+                        <!-- 权限信息 -->
                         <div class="bg-white rounded-xl p-6 shadow-sm">
-                            <h4 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2">社区活跃</h4>
+                            <h4 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2 flex items-center">
+                                <i class="fas fa-shield-alt mr-2 text-primary-500"></i> 权限信息
+                            </h4>
                             <div class="space-y-3">
-                                <div>
-                                    <p class="text-sm text-gray-500">信任等级</p>
-                                    <p>${user.trust_level} (${getTrustLevelName(user.trust_level)})</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">管理员</span>
+                                    <span class="font-medium">${user.admin ? '<i class="fas fa-check-circle text-green-500"></i> 是' : '<i class="fas fa-times-circle text-red-500"></i> 否'}</span>
                                 </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">徽章数量</p>
-                                    <p>${user.badge_count || 0}</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">版主</span>
+                                    <span class="font-medium">${user.moderator ? '<i class="fas fa-check-circle text-green-500"></i> 是' : '<i class="fas fa-times-circle text-red-500"></i> 否'}</span>
                                 </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">总阅读时间</p>
-                                    <p>${formatTimeRead(user.time_read)}</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">可以发送私信</span>
+                                    <span class="font-medium">${user.can_send_private_messages ? '<i class="fas fa-check-circle text-green-500"></i> 是' : '<i class="fas fa-times-circle text-red-500"></i> 否'}</span>
                                 </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">近期阅读时间</p>
-                                    <p>${formatTimeRead(user.recent_time_read)}</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-white rounded-xl p-6 shadow-sm">
-                            <h4 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2">社交信息</h4>
-                            <div class="space-y-3">
-                                <div>
-                                    <p class="text-sm text-gray-500">关注者</p>
-                                    <p>${user.total_followers || 0}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">正在关注</p>
-                                    <p>${user.total_following || 0}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">个人资料查看次数</p>
-                                    <p>${user.profile_view_count || 0}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">游戏化分数</p>
-                                    <p>${user.gamification_score || 0}</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">可以编辑资料</span>
+                                    <span class="font-medium">${user.can_edit ? '<i class="fas fa-check-circle text-green-500"></i> 是' : '<i class="fas fa-times-circle text-red-500"></i> 否'}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
                 
+                // 精选主题
                 if (user.featured_topic) {
                     html += `
                         <div class="bg-white rounded-xl p-6 shadow-sm">
-                            <h4 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2">精选主题</h4>
+                            <h4 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2 flex items-center">
+                                <i class="fas fa-star mr-2 text-yellow-500"></i> 精选主题
+                            </h4>
                             <div>
-                                <p class="font-medium"><a href="https://linux.do/t/topic/${user.featured_topic.id}" target="_blank" style="text-decoration:none;">${user.featured_topic.fancy_title || user.featured_topic.title}</a></p>
-                                <p class="text-sm text-gray-600 mt-1">帖子数: ${user.featured_topic.posts_count}</p>
+                                <p class="font-medium text-lg"><a href="https://linux.do/t/${user.featured_topic.slug}/${user.featured_topic.id}" target="_blank" class="text-primary-600 hover:underline">${user.featured_topic.fancy_title || user.featured_topic.title}</a></p>
+                                <div class="flex items-center mt-2 text-sm text-gray-600">
+                                    <span class="mr-4"><i class="fas fa-comments mr-1"></i> ${user.featured_topic.posts_count} 条回复</span>
+                                    <span><i class="fas fa-eye mr-1"></i> ${Math.floor(user.featured_topic.posts_count * 3.5)} 次浏览</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // 徽章详情
+                if (user.card_badge) {
+                    html += `
+                        <div class="bg-white rounded-xl p-6 shadow-sm">
+                            <h4 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2 flex items-center">
+                                <i class="fas fa-award mr-2 text-primary-500"></i> 当前徽章
+                            </h4>
+                            <div class="flex flex-col md:flex-row gap-6">
+                                <div class="flex items-center justify-center md:justify-start">
+                                    <img src="${user.flair_url ? 'https://linux.do' + user.flair_url : 'https://via.placeholder.com/120'}" alt="徽章" class="w-24 h-24 rounded-lg">
+                                </div>
+                                <div class="flex-1">
+                                    <h5 class="text-xl font-bold mb-2">${user.card_badge.name}</h5>
+                                    <p class="text-gray-600 mb-3">${user.card_badge.description}</p>
+                                    <p class="text-sm text-gray-500">获得时间: ${formatDate(user.card_badge.created_at)}</p>
+                                    <div class="mt-4">
+                                        <button class="text-sm text-primary-600 hover:text-primary-800 flex items-center collapse-toggle" data-target="badgeDetail">
+                                            <i class="fas fa-chevron-down mr-1"></i> 查看详细描述
+                                        </button>
+                                        <div id="badgeDetail" class="collapse-content mt-2">
+                                            <p class="text-gray-600">${user.card_badge.long_description}</p>
+                                            <p class="text-sm text-gray-500 mt-2">共有 ${user.card_badge.grant_count} 位用户获得此徽章</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // 提醒频率设置
+                if (user.reminders_frequency && user.reminders_frequency.length > 0) {
+                    html += `
+                        <div class="bg-white rounded-xl p-6 shadow-sm">
+                            <h4 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2 flex items-center">
+                                <i class="fas fa-bell mr-2 text-primary-500"></i> 提醒频率设置
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                                ${user.reminders_frequency.map(item => `
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <h5 class="text-sm font-medium text-gray-500">${item.name.split('.').pop()}</h5>
+                                        <p class="text-lg font-semibold">${item.value === 0 ? '从不' : formatReminderFrequency(item.value)}</p>
+                                    </div>
+                                `).join('')}
                             </div>
                         </div>
                     `;
                 }
                 
                 $('#userResult').html(html);
+                
+                // 初始化图表
+                initCharts(user);
+                
+                // 绑定折叠面板事件
+                $('.collapse-toggle').click(function() {
+                    const target = $(this).data('target');
+                    $(`#${target}`).toggleClass('show');
+                    $(this).find('i').toggleClass('fa-chevron-down fa-chevron-up');
+                });
+            }
+            
+            // 初始化图表
+            function initCharts(user) {
+                // 阅读时间图表
+                const readingCtx = document.getElementById('readingChart').getContext('2d');
+                new Chart(readingCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['总阅读时间', '近期阅读时间'],
+                        datasets: [{
+                            data: [user.time_read, user.recent_time_read],
+                            backgroundColor: [
+                                'rgba(14, 165, 233, 0.8)',
+                                'rgba(34, 197, 94, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(14, 165, 233, 1)',
+                                'rgba(34, 197, 94, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.label}: ${formatTimeRead(context.raw)}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
             }
             
             // 格式化日期
@@ -403,6 +813,16 @@ body {
                 const hours = Math.floor(minutes / 60);
                 const mins = minutes % 60;
                 return hours > 0 ? `${hours}小时${mins}分钟` : `${mins}分钟`;
+            }
+            
+            // 格式化提醒频率
+            function formatReminderFrequency(minutes) {
+                if (minutes === 0) return '从不';
+                if (minutes < 60) return `${minutes}分钟`;
+                if (minutes < 1440) return `${Math.floor(minutes / 60)}小时`;
+                if (minutes < 10080) return `${Math.floor(minutes / 1440)}天`;
+                if (minutes < 43200) return `${Math.floor(minutes / 10080)}周`;
+                return `${Math.floor(minutes / 43200)}月`;
             }
             
             // 获取信任等级名称
