@@ -84,8 +84,9 @@ function processImageUrls(obj: any) {
       }
       
       if (key === 'bio_cooked' && typeof obj[key] === 'string') {
+        // 使用正则表达式全局替换所有 /images/ 路径
         obj[key] = obj[key].replace(
-          'src="/images/', 
+          /src="\/images\//g, 
           'src="https://linux.do/images/'
         );
       }
