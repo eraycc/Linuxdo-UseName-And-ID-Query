@@ -477,10 +477,10 @@ body {
                     <div class="bg-gradient-to-r from-primary-50 to-secondary-50 rounded-xl p-6 md:p-8 shadow-sm">
                         <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
                             <div class="relative">
-                                <img src="${user.avatar_url || 'https://via.placeholder.com/288'}" alt="头像" class="user-avatar w-24 h-24 rounded-full object-cover">
+                                <img src="${user.avatar_url || 'https://www.loliapi.com/acg/pp/?avatar'}" alt="头像" class="user-avatar w-24 h-24 rounded-full object-cover">
                                 ${user.card_badge ? `
                                 <div class="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-md" title="${user.card_badge.description}">
-                                    <img src="${user.flair_url || 'https://www.loliapi.com/acg/pp/'}" alt="徽章" class="w-10 h-10 rounded-full">
+                                    <img src="${user.flair_url?.startsWith('http') ? user.flair_url : 'https://www.loliapi.com/acg/pp/?flair'}" alt="徽章" class="w-10 h-10 rounded-full">
                                 </div>
                                 ` : ''}
                             </div>
@@ -700,7 +700,7 @@ body {
                             </h4>
                             <div class="flex flex-col md:flex-row gap-6">
                                 <div class="flex items-center justify-center md:justify-start">
-                                    <img src="${user.flair_url || 'https://www.loliapi.com/acg/pp/'}" alt="徽章" class="w-24 h-24 rounded-lg">
+                                    <img src="${user.flair_url?.startsWith('http') ? user.flair_url : 'https://www.loliapi.com/acg/pp/?flair'}" alt="徽章" class="w-10 h-10 rounded-full">
                                 </div>
                                 <div class="flex-1">
                                     <h5 class="text-xl font-bold mb-2">${user.card_badge.name}</h5>
