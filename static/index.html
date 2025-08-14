@@ -491,7 +491,7 @@ body {
                                     ${user.card_badge ? `<span class="badge"><i class="fas fa-award mr-1"></i> ${user.card_badge.name}</span>` : ''}
                                     ${user.flair_name ? `<span class="flair"><i class="fas fa-tag mr-1"></i> ${user.flair_name}</span>` : ''}
                                 </div>
-                                <p class="text-gray-600 mb-1"><i class="fas fa-user mr-2"></i> @${user.username}</p>
+                                <p class="text-gray-600 mb-1"><i class="fas fa-user mr-2"></i><a href="https://linux.do/u/${user.username}/summary" target="_blank" style="text-decoration:none;color:#2563eb"> @${user.username} </a></p>
                                 ${user.location ? `<p class="text-gray-600 mb-1"><i class="fas fa-map-marker-alt mr-2"></i> ${user.location}</p>` : ''}
                                 ${user.website ? `<p class="text-gray-600"><i class="fas fa-link mr-2"></i> <a href="${user.website}" target="_blank" class="text-primary-600 hover:underline">${user.website_name || user.website}</a></p>` : ''}
                             </div>
